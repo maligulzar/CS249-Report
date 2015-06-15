@@ -93,7 +93,7 @@
 \maketitle
 \begin{abstract}
 
-Apache Spark has become a key platform for Big Data Analytics, yet it lacks complete support for debugging analytics programs. As a result, the development of a new analytical toolkit can be a painstakingly long process. To fill this gap, we developed Spark-BDD (Big Data Debugger), which brings a traditional interactive debugger experience to the Spark platform. Over the course of this project we integrated current version of Spark-BDD with some interactive fault localization and optimization mechanisms.  Analytic programmers (e.g., data scientists) can leverage Spark-BDD interactive debugging capabilities to set breakpoints and watchpoints, investigate crashes and failures, identifying straggling data partitions. Along with debugging this tool provides some useful runtime information that can be helpful in improving the performance of Spark in an unpredicted cluster deployment. One of these optimizations is inter-stage repartitioning to avoid data skew during data shuffling where performance improvement is reflected in the Spark job competition time.  Most of these debugging features pose minimum overhead  and in turn provide valuable debugging with lowest number of iterations.
+Cluster computing frameworks such as Apache Spark have been widely adopted to enable complicated processing of large datasets. However, debugging data-intensive applications running on such platforms is usually painstaking, since it involves massive data and lacks support for commmon debugging features such as breakpoints. To fill this gap, we presented Spark-BDD, a bigdata debugger that brings conventional, interactive debugging features to the Spark platform. Developers can use Spark-BDD to interactively debug and investigate program failures as they usually do on local machines. It also identifies stragglers and enables users to reason and fix about performance flaws by computing latency-based task distribution. Our experiment result shows that Spark-BDD poses around 30\% overhead and adding more workers won't produce extra overhead.
 \end{abstract}
 
 \keywords{Debugging, Apache Spark, Fault Recovery \& Localization, Performance} % NOT required for Proceedings
@@ -110,11 +110,6 @@ Cluster competing frameworks are usually resource hungry and also consumes a lot
 
 \section{Approach}
 Considering the motivations and the current debugging need of Spark, we built a debugging environment integrated within Spark to support most of the features to perform extensive debugging both on physical and data plane. Spark-BDD is build with in the internals/core of Spark to have control over the low level details of then jobs so that even the minute actions could be shown to the user as per need. This debugger also provides an interactive UI designed along the with the current Spark monitoring UI to give low level controls to the user.  The idea here is to provide essential details to the user to detect faults and logical errors that can not be detected through the normal logging mechanisms. Interactive user interface provides runtime details to the user to make debugging decisions like step in/out, put monitors, handling crashes, tracing faulty data source and tracking latencies.
-
-
-\section{Related work}
-
-TODO
 
 \section{Implementation - Features}
 The current state of the debugger performs the features described in the sub sections below. All the features are implemented with in the internal core code of Spark as hooks to provide the most efficient and robust implementation. Along with the debugging backend systems , almost all the features are supported and controlled through both programming API in both Java and Scala and also using the web based UI.
@@ -149,6 +144,16 @@ Since the existence of stragglers, a well-distributed hash function might not be
 % FROM GOOGLE SLIDES 
 * With all debugging features enabled, SparkBDD poses ~30\% overhead.
 * Adding more workers won't produce extra overhead.
+
+
+\section{Related work}
+To our best knowledge, there are three systems designed for debugging cluster computing frameworks, Inspector Gadget~\cite{olston2011inspector}, Daphne~\cite{jagannath2011monitoring}, and Arthur~\cite{dave2013arthur}. 
+
+Inspector Gadget is a framework for monitoring and debugging data flow programs in Apache Pig. It instruments programs to obtain various information, like the completion time of each task, records satisfying a predicate, and report this information to developers. However, this approach requires the user to selectively specify the edges they want to monitor in the data flow graph, which we think is not very intuitive. Besides, the runtime overhead of IG sometimes jacks up to 70\%, which is very expensive in practice. In contrast, our approach allows users to debug data flow programs as they commonly do, by adding breakpoints and watchpoints and our approach only poses 30\% overhead. 
+
+Daphne includes a set of tools that help developers visualize and debug DryadLINQ programs. Essentially, it models the distributed state of a program as a DryadLINQ job object. Layered on this model, they built various debugging features, e.g., collecting and analyzing performance data, visualizing distributed state, etc. This approach is limited because it requires the communication between tasks to be through files on disk. Thus, it is not applicable for frameworks that perform in-memory transformations such as Spark. However, Spark-BDD allows developers to view and reason about the intermediate data in Spark. 
+
+Arthur provides a rich set of analysis tools through selective replay of data flow applications in Hadoop and Spark. Instead of re-executing the entire program, it allows the user to selectively rerun the program to the point of interest. It further seralizes the intermediate result at that point so the user can perform ad-hoc queries on the intermediate result. However, it has to replay the program from the beginning and doesn't allow the user to specify which dataset he or she wants to investigate. Spark-BDD overcomes these limits by allowing users to set breakpoints and watchpoints at any stage and any dataset as they wish.
 
 \section{Conclusion}
 
