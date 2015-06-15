@@ -178,10 +178,9 @@ Arthur provides a rich set of analysis tools through selective replay of data fl
 \section{Conclusion}
 
 \subsection{Future Work}
-% FROM GOOGLE SLIDES 
-* Fault replay in local machine
-* Intermediate data summaries
-* Fault localization through forward and backward tracing
+In the distributed computing system, faulty reasons can be from a lot of external sources. For example, a hardware failure, a link failure or the operating system level failure can crash the program. Thus, there is no guarantee that the crash culprits will reproduce the exactly same errors. To make sure the faults are coming from the value of a dataset, we are going to implement the feature of fault replay in local machines.\\
+While a user develops Spark applications, the current version of Spark doesn't provide the visualization of the intermediate data summaries. We want to offer a clear view of data representation, therefore, the user can fix the program interactively.\\
+Another future feature of our Spark-BDD is fault localization through forward and backward tracing.
 
 \bibliographystyle{abbrv}
 \bibliography{sigproc}  
