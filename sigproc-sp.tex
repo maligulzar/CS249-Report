@@ -27,6 +27,8 @@
 % For tracking purposes - this is V3.1SP - APRIL 2009
 
 \documentclass{acm_proc_article-sp}
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 \begin{document}
 
@@ -133,18 +135,36 @@ We added a feature of a crash culprit, which means a dataset that causes a progr
 
 \subsection{Crash Recovery}
 
-When SparkBDD performs a recovery action for a dataset that causes a program crash, we provide two ways of resolving it: (1) to let a user fix the dataset immediately, (2) to proceed the program execution anyway while keeping the dataset at the same time. A user may choose which recovery method will be used by setting up the configuration. After SparkBDD keeps the crash culprits in the other location, it will execute the same program with the captured dataset. The lazy recovery method has an advantage of batch processing at the cost of occupying additional memory space. The user may be able to analyze the pattern of data records causing a program crash. However, we added a threshold value on the maximum number of captured crash culprit records because too many data records might not be helpful to understand what the actual thing happens.
+When Spark-BDD performs a recovery action for a dataset that causes a program crash, we provide two ways of resolving it: (1) to let a user fix the dataset immediately, (2) to proceed the program execution anyway while keeping the dataset at the same time. A user may choose which recovery method will be used by setting up the configuration. After Spark-BDD keeps the crash culprits in the other location, it will execute the same program with the captured dataset. The lazy recovery method has an advantage of batch processing at the cost of occupying additional memory space. The user may be able to analyze the pattern of data records causing a program crash. However, we added a threshold value on the maximum number of captured crash culprit records because too many data records might not be helpful to understand what the actual thing happens.
 
 \subsection{Re-Partitioning}
 
-Since the existence of stragglers, a well-distributed hash function might not be able to schedule each task to worker nodes. The possible causes of having stragglers in the distributed computing system are: (1) bad records that requires unexpectedly huge resource consumption, (2) overloaded worker nodes. In SparkBDD, we monitor the execution time of each task and record, therefore, we are able to figure out which node is going to be slow. Once we know the straggler and the faster node at the same time, we can imagine that a delay caused by stragglers can be mitigated by sending the tasks in the straggler node to the faster one. 
+Since the existence of stragglers, a well-distributed hash function might not be able to schedule each task to worker nodes. The possible causes of having stragglers in the distributed computing system are: (1) bad records that requires unexpectedly huge resource consumption, (2) overloaded worker nodes. In Spark-BDD, we monitor the execution time of each task and record, therefore, we are able to figure out which node is going to be slow. Once we know the straggler and the faster node at the same time, we can imagine that a delay caused by stragglers can be mitigated by sending the tasks in the straggler node to the faster one. 
 
 \section{Evaluation}
-\subsection{Performance}
-% FROM GOOGLE SLIDES 
-* With all debugging features enabled, SparkBDD poses ~30\% overhead.
-* Adding more workers won't produce extra overhead.
+\subsection{Debugging Scenario}
 
+
+\subsection{Performance}
+
+\begin{figure}[ht]
+    \begin{minipage}[b]{\linewidth}
+        \includegraphics[width=\textwidth]{spark-bdd-performance.png}
+        \caption{Overhead of Spark-BDD with all features enabled}
+        \label{fig:overhead}
+    \end{minipage}
+\end{figure}
+Our implementation of Spark-BDD poses 30\% of additional overhead with all debugging features enabled. The measurement on Spark-BDD is done by comparing total execution time between the original version of Spark and Spark-BDD. In Figure ~\ref{fig:overhead}, we can observe the relative percentage of overhead is not depending on the size of input data. Since we think superflous information are easy to make a user confused, we set threshold of the maximum number of entries for each feature which has a proportional overhead on the data size.\\
+\begin{figure}[ht]
+    \begin{minipage}[b]{\linewidth}
+        \includegraphics[width=\textwidth]{spark-bdd-scale-out.png}
+        \caption{Scale-out of Spark-BDD}
+        \label{fig:scaleout}
+    \end{minipage}
+\end{figure}
+% Is the graph enough to rationalize the current implementation doesn't show any additional overhead as the number of workers increase. In my opinion, we need a dataset of the original version of Spark to evaluate the overhead properly.
+% The large number of worker nodes doesn't guarantee the exact amount of performance boost.
+Another possible factor of the overhead is the number of worker nodes. For example, the features of the breakpoint, watchpoint, straggler and re-partitioning can be affected by the number of worker nodes because it has to keep the status of each node. In Figure ~\ref{fig:scaleout}, we measured total execution time as the number of worker nodes increases. Considering the initialization time, performance overhead that is caused by the large number of worker nodes is negligible.
 
 \section{Related work}
 To our best knowledge, there are three systems designed for debugging cluster computing frameworks, Inspector Gadget~\cite{olston2011inspector}, Daphne~\cite{jagannath2011monitoring}, and Arthur~\cite{dave2013arthur}. 
