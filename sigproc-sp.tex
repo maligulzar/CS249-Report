@@ -143,9 +143,6 @@ When Spark-BDD performs a recovery action for a dataset that causes a program cr
 Since the existence of stragglers, a well-distributed hash function might not be able to schedule each task to worker nodes. The possible causes of having stragglers in the distributed computing system are: (1) bad records that require unexpectedly huge resource consumption, (2) overloaded worker nodes. In Spark-BDD, we monitor the execution time of each task and record, therefore, we are able to figure out which node is going to be slow. Once we know the straggler and the faster node at the same time, we can imagine that a delay caused by stragglers can be mitigated by sending the tasks in the straggler node to the faster one. 
 
 \section{Evaluation}
-\subsection{Debugging Scenario}
-
-
 \subsection{Performance}
 
 \begin{figure}[ht]
@@ -177,11 +174,12 @@ Daphne includes a set of tools that help developers visualize and debug DryadLIN
 Arthur provides a rich set of analysis tools through a selective replay of data flow applications in Hadoop and Spark. Instead of re-executing the entire program, it allows the user to selectively rerun the program to the point of interest. It further serializes the intermediate result at that point so the user can perform ad-hoc queries on the intermediate result. However, it has to replay the program from the beginning and doesn't allow the user to specify which dataset he or she wants to investigate. Spark-BDD overcomes these limits by allowing users to set breakpoints and watchpoints at any stage and any dataset as they wish.
 
 \section{Conclusion}
+By having these features like breakpoint, watchpoint, straggler profiling and crash culprit detection, we were able to assist a user in doing analyzing the program execution and finding the dataset which causes a runtime exception and anomalous slowness. The overhead of our implementation was restricted by setting a threshold value of the maximum number of entries for each debugging feature. Therefore, the relative percentage of the overhead was constant, around 30\%.
 
 \section{Future Work}
 In the distributed computing system, faulty reasons can be from a lot of external sources. For example, a hardware failure, a link failure or the operating system level failure can crash the program. Thus, there is no guarantee that the crash culprits will reproduce the exactly same errors. To make sure the faults are coming from the value of a dataset, we are going to implement the feature of fault replay in local machines.\\
 While a user develops Spark applications, the current version of Spark doesn't provide the visualization of the intermediate data summaries. We want to offer a clear view of data representation, therefore, the user can fix the program interactively.\\
-Another future feature of our Spark-BDD is fault localization through forward and backward tracing.
+Another future goal of our Spark-BDD implementation is fault localization through forward and backward tracing. The backward tracing feature is useful in a sense that it can trace back the origin of anomalous data. By going back to the previous stage, we are able to see how the transformation happens. Forward tracing will be used after fixing the problematic transformation to check whether the new program code works as intended.
 
 \bibliographystyle{abbrv}
 \bibliography{sigproc}  
